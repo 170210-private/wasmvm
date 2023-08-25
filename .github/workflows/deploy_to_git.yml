@@ -115,7 +115,7 @@ jobs:
           token: ${{ steps.generate-token.outputs.token }}
           signoff: true
           branch: ${{ github.head_ref }}_shared_library_test
-          base: main
+          base: ${{ github.head_ref }}
           delete-branch: true
           title: 'chore: (automerge)update shared library'
           body: |
