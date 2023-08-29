@@ -87,7 +87,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          ref: test
+          ref: ${{ github.ref }}
           token: ${{ steps.generate-token.outputs.token }}
       - name: Download shared library
         uses: actions/download-artifact@v3
@@ -104,13 +104,22 @@ jobs:
           else
             echo "need_update=false" >> "$GITHUB_OUTPUT"
           fi
+      - name: debug
+        run: |
+          echo ${{ github.ref }}
+          echo ${{ github.head_ref }}
       - name: Create commit
         if: steps.cd.outputs.need_update=='true'
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "auto generate shared library"
-          git push origin test
+          git commit -s -m "auto generate shared library"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ steps.generate-token.outputs.token }}
+          branch: ${{ github.ref }}
+
       # - name: Create pull request
       #   if: steps.cd.outputs.need_update=='true'
       #   id: cpr 
