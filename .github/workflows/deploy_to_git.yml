@@ -104,21 +104,17 @@ jobs:
           else
             echo "need_update=false" >> "$GITHUB_OUTPUT"
           fi
-      - name: debug
-        run: |
-          echo ${{ github.ref }}
-          echo ${{ github.head_ref }}
       - name: Create commit
         if: steps.cd.outputs.need_update=='true'
         run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name  "170210-test-bypass[bot]"
+          git config user.email "143078850+170210-test-bypass[bot]@users.noreply.github.com"
           git commit -s -m "auto generate shared library"
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ steps.generate-token.outputs.token }}
-          branch: ${{ github.ref }}
+          branch: origin${{ github.ref }}
           force: true
       # - name: Create pull request
       #   if: steps.cd.outputs.need_update=='true'
