@@ -107,15 +107,13 @@ jobs:
       #       echo "need_update=false" >> "$GITHUB_OUTPUT"
       #     fi
       - name: Check diff
-        id: diff
         uses: technote-space/get-diff-action@v6.1.2
         with:
           PATTERNS: |
             internal/api/*.so
             internal/api/*.dylib
       - name: debug
-        needs: diff
-        if: ${{ needs.diff.outputs.get_diff }}
+        if: env.GIT_DIFF
         run:
           echo "need to update"
       # - name: Create commit
