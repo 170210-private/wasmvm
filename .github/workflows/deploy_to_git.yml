@@ -27,7 +27,7 @@ jobs:
             shared_library_extension: dylib
     runs-on: ubuntu-latest
     # excute only after pr merged
-    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.user.login != app/170210-test-bypass }}
+    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.user.login != '170210-test-bypass[bot]' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
