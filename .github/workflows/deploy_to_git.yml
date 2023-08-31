@@ -97,8 +97,9 @@ jobs:
         run: |
           mv ./artifacts/linux-shared-library/* ./internal/api
           mv ./artifacts/macos-shared-library/* ./internal/api
-          new_checksums = shasum -a 256 *.so *.dylib
-          old_checksums = cat checksums.txt
+          cd ./internal/api
+          new_checksums=$(shasum -a 256 *.so *.dylib)
+          old_checksums=$(cat checksums.txt)
           echo $new_checksums
           echo $old_checksums
           if [[ "$new_checksums" != "$old_checksums" ]] ; then
