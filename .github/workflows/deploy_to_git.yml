@@ -104,7 +104,9 @@ jobs:
       - name: Check PR
         # if: steps.cd.outputs.need_update=='true'
         run: |
-          gh pr list --state open --json author,number | jq -r '.[] | select(.author.login == "app/170210-test-bypass") | .number'
+          gh pr list --state open --json author,number | jq -r '.[] | select(.author.login == "app/170210-test-bypass") | .number' | while read -r pr_number; do
+            gh pr close -d -c "This pr is out of date." $pr_number
+          done
         env: 
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
       # - name: Create commit
