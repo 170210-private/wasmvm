@@ -104,9 +104,7 @@ jobs:
       - name: Check PR
         # if: steps.cd.outputs.need_update=='true'
         run: |
-          gh pr list --author "@me" --state open --json number --jq '.[] | select(.state == "open") | .number' | while read -r pr_number; do
-            echo $pr_number
-          done
+          gh pr list --author "@me"
         env: 
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
       # - name: Create commit
