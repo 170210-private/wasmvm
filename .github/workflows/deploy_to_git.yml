@@ -104,7 +104,7 @@ jobs:
       - name: Check PR
         # if: steps.cd.outputs.need_update=='true'
         run: |
-          gh pr list --state open --json author,number
+          gh pr list --state open --json author,number | jq -r '.[] | select(.author.login == "app/170210-test-bypass") | .number'
         env: 
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
       # - name: Create commit
