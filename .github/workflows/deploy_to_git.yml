@@ -90,13 +90,15 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           path: ./artifacts
+      // to ignore the chmod diff, use git diff -G"."
+      // because in this time, there is no branch, so it cannot use the actions/get-diff
       - name: Check diff
         id: cd
         run: |
           mv ./artifacts/linux-shared-library/* ./internal/api
           mv ./artifacts/macos-shared-library/* ./internal/api
           git add .
-          if ! git diff --cached --exit-code ; then
+          if ! git diff -G"." --cached --exit-code ; then
             echo "need_update=true" >> "$GITHUB_OUTPUT"
           else
             echo "need_update=false" >> "$GITHUB_OUTPUT"
@@ -114,7 +116,7 @@ jobs:
         run: |
           git config user.name  "170210-test-bypass[bot]"
           git config user.email "143078850+170210-test-bypass[bot]@users.noreply.github.com"
-          git commit -m "auto generate shared library"
+          git commit -m "chore: auto generate shared library"
       - name: Create pull request
         if: steps.cd.outputs.need_update=='true'
         id: cpr 
