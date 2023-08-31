@@ -90,8 +90,8 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           path: ./artifacts
-      // to ignore the chmod diff, use git diff -G"."
-      // because in this time, there is no branch, so it cannot use the actions/get-diff
+      # to ignore the chmod diff, use git diff -G"."
+      # because in this time, there is no branch, so it cannot use the actions/get-diff
       - name: Check diff
         id: cd
         run: |
