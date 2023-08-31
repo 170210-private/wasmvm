@@ -102,7 +102,7 @@ jobs:
       #       echo "need_update=false" >> "$GITHUB_OUTPUT"
       #     fi
       - name: Check PR
-        if: steps.cd.outputs.need_update=='true'
+        # if: steps.cd.outputs.need_update=='true'
         run: |
           gh pr list --author "@me" --state open --json number --jq '.[] | select(.state == "open") | .number' | while read -r pr_number; do
             echo $pr_number
