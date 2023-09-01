@@ -65,6 +65,8 @@ jobs:
           mv /tmp/.buildx-cache/${{ matrix.os }}-new /tmp/.buildx-cache/${{ matrix.os }}
       - name: Build shared library
         run: make release-build-${{ matrix.os }}
+      - name: debug
+        run: git ls-files -s ./internal/api
       - name: Upload shared library
         uses: actions/upload-artifact@v3
         with:
@@ -95,11 +97,10 @@ jobs:
       - name: Check diff
         id: cd
         run: |
+          old_checksums=$(shasum -a 256 internal/api/*.{so,dylib})
           mv ./artifacts/linux-shared-library/* ./internal/api
-          mv ./artifacts/macos-shared-library/* ./internal/api
-          cd ./internal/api
-          new_checksums=$(shasum -a 256 *.so *.dylib)
-          old_checksums=$(cat checksums.txt)
+          mv ./artifacts/macos-shared-library/* ./internal/api     
+          new_checksums=$(shasum -a 256 internal/api/*.{so,dylib})
           echo $new_checksums
           echo $old_checksums
           if [[ "$new_checksums" != "$old_checksums" ]] ; then
