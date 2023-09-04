@@ -101,16 +101,11 @@ jobs:
       - name: Check diff
         id: cd
         run: |
-          old_checksums=$(shasum -a 256 internal/api/*.{so,dylib})
           mv ./artifacts/linux-shared-library/* ./internal/api
           mv ./artifacts/macos-shared-library/* ./internal/api
-          git ls-files -s internal/api
           chmod 755 internal/api/*.{so,dylib}
           git add .
           git ls-files -s internal/api
-          new_checksums=$(shasum -a 256 internal/api/*.{so,dylib})
-          echo $new_checksums
-          echo $old_checksums
           if ! git diff --cached --exit-code ; then
             echo "need_update=true" >> "$GITHUB_OUTPUT"
           else
