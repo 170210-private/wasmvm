@@ -29,7 +29,7 @@ jobs:
             shared_library_extension: dylib
     runs-on: ubuntu-latest
     # excute only after pr merged
-    if: ${{ github.event.push.pusher.name != '170210-test-bypass[bot]' }}
+    if: ${{ github.event.pusher.name != '170210-test-bypass[bot]' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -39,10 +39,9 @@ jobs:
           go-version: '1.20'
       - name: debug
         run: |
-          echo ${{ github.event.push.sender.name }}
-          echo ${{ github.event.push.pusher.name }}
-          echo ${{ github.ref }}
-          echi ${{ github.head_ref }}
+          echo ${{ github.event.sender.name }}
+          echo ${{ github.event.pusher.name }}
+          echo ${{ github.ref_name }}
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
       - name: Prepare
@@ -133,7 +132,7 @@ jobs:
           token: ${{ steps.generate-token.outputs.token }}
           signoff: true
           branch: auto_shared_library_${{ needs.build_shared_library.steps.prep.outputs.tag }}
-          base: ${{ github.ref }}
+          base: ${{ github.ref_name }}
           delete-branch: true
           title: 'chore: (auto)update shared library'
           body: |
