@@ -120,8 +120,8 @@ jobs:
       - name: Get latest PR
         id: prn
         run: |
-          git log --format=%B -n 1
-          LATEST_PR_NUMBER=$(git log --format=%B -n 1 | grep -oP '.*\(#\K\d+(?=\))')
+          git log --format=%B -n 1 | head -n 1 
+          LATEST_PR_NUMBER=$(git log --format=%B -n 1 | head -n 1 | grep -oP '.*\(#\K\d+(?=\))')
           echo $LATEST_PR_NUMBER
           echo "latest_pr_number=${LATEST_PR_NUMBER}" >> "$GITHUB_OUTPUT"
       - name: Create commit
