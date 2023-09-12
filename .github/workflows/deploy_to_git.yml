@@ -120,7 +120,7 @@ jobs:
       - name: Get latest PR
         id: prn
         run: |
-          latest_pr_number=$(git log --format=%B -n 1 | ggrep -oP '.*\(#\K\d+(?=\))')
+          latest_pr_number=$(git log --format=%B -n 1 | grep -oP '.*\(#\K\d+(?=\))')
           echo "latest_pr_number=${latest_pr_number}" >> "$GITHUB_OUTPUT"
       - name: Create commit
         if: steps.cd.outputs.need_update=='true'
