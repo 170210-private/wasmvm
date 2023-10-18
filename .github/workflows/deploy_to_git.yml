@@ -32,7 +32,7 @@ jobs:
             shared_library_extension: dylib
     runs-on: ubuntu-latest
     # execute only after pr merged
-    if: ${{ github.event.pusher.name != 'finschia-auto-pr[bot]' }}
+    if: ${{ github.event.pusher.name != '170210-test-bypass[bot]' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -112,7 +112,7 @@ jobs:
       - name: Check PR
         if: steps.cd.outputs.need_update=='true'
         run: |
-          gh pr list --state open --json author,number | jq -r '.[] | select(.author.login == "app/finschia-auto-pr[bot]") | .number' | while read -r pr_number; do
+          gh pr list --state open --json author,number | jq -r '.[] | select(.author.login == "app/170210-test-bypass[bot]") | .number' | while read -r pr_number; do
             gh pr close -d -c "This pr is out of date." $pr_number
           done
         env: 
@@ -125,8 +125,8 @@ jobs:
       - name: Create commit
         if: steps.cd.outputs.need_update=='true'
         run: |
-          git config user.name  "finschia-auto-pr[bot]"
-          git config user.email "141415241+finschia-auto-pr[bot]@users.noreply.github.com"
+          git config user.name  "170210-test-bypass[bot]"
+          git config user.email "143078850+170210-test-bypass[bot]@users.noreply.github.com"
           git commit -m "chore: auto generate shared library"
       - name: Create pull request
         if: steps.cd.outputs.need_update=='true'
