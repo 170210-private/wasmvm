@@ -164,15 +164,18 @@ jobs:
   get-version: # emit package version using `cargo tree -i`
     name: Get Package Version
     runs-on: ubuntu-latest
-    needs: deploy_to_git
-    if: always() && ( ${{ needs.deploy_to_git.result=='skipped' || needs.deploy_to_git.outputs.updated=='false' }} )
+    needs: [build_shared_library,deploy_to_git]
+    if: |
+      always() && 
+      ( needs.build_shared_library.result=='success' || needs.build_shared_library.result=='skipped' ) &&
+      ( github.event.pusher.name == '170210-test-bypass[bot]' || needs.deploy_to_git.outputs.updated=='false' )
     outputs:
       package-version: ${{ steps.get-package-version.outputs.version }}
       latest-tag: ${{ steps.get-latest-tag.outputs.tag }}
     steps:
       - name: Debug
         run: |
-          echo ${{ needs.deploy_to_git.result }}
+          echo ${{ github.event.pusher.name }}
           echo ${{ needs.deploy_to_git.outputs.updated }}
 
   push-tag: # if the version does not exist as git tag, push it
