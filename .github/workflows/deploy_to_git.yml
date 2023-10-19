@@ -197,9 +197,7 @@ jobs:
     steps:
       - name: Push Tag to GitHub
         run: |
-          curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
-          -d "{\"ref\": \"refs/tags/${{ needs.get-version.outputs.package-version }}\", \"sha\": \"${GITHUB_SHA}\"}" \
-          "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs"
+          echo "hello"
 
   update-releases:
     name: Update releases
@@ -211,34 +209,5 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: set up
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.20'
-        id: go
-      - name: Checkout
-        uses: actions/checkout@v3
       - name: Build docker image
-        run: cd builders && make docker-image-alpine && make docker-image-cross
-      - name: Build & Test static library
-        run: make release-build-alpine
-      - name: Build static library for MacOS
-        run: make release-build-macos-static
-      - name: Collect artifacts
-        run: |
-          mkdir artifacts
-          cp ./internal/api/libwasmvm_muslc.a ./artifacts/libwasmvm_muslc.x86_64.a
-          cp ./internal/api/libwasmvm_muslc.aarch64.a ./artifacts/libwasmvm_muslc.aarch64.a
-          cp ./internal/api/libwasmvmstatic_darwin.a ./artifacts/libwasmvmstatic_darwin.a
-      - name: Create checksums
-        working-directory: ./artifacts
-        run: sha256sum * > checksums.txt && cat checksums.txt
-      - name: Create Release
-        uses: softprops/action-gh-release@v0.1.13
-        with:
-          tag_name: ${{ needs.get-version.outputs.package-version }}
-          body: ${{ github.event.pull_request.body }}
-          files: |
-            ./artifacts/*
-          draft: false
-          prerelease: false
+        run: echo "bye"
