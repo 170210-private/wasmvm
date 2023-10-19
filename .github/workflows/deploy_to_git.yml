@@ -5,10 +5,14 @@ on:
     branches:
       - main
       - release/*
+      - hotfix**
 
 permissions:
   pull-requests: write
   contents: write
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   build_shared_library:
@@ -28,7 +32,7 @@ jobs:
             shared_library_extension: dylib
     runs-on: ubuntu-latest
     # execute only after pr merged
-    if: ${{ github.event.pusher.name != 'finschia-auto-pr[bot]' }}
+    if: ${{ github.event.pusher.name != '170210-test-bypass[bot]' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -75,6 +79,8 @@ jobs:
   deploy_to_git:
     runs-on: ubuntu-latest
     needs: build_shared_library
+    outputs:
+      updated: ${{ steps.cd.outputs.need_update }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -106,7 +112,7 @@ jobs:
       - name: Check PR
         if: steps.cd.outputs.need_update=='true'
         run: |
-          gh pr list --state open --json author,number | jq -r '.[] | select(.author.login == "app/finschia-auto-pr[bot]") | .number' | while read -r pr_number; do
+          gh pr list --state open --json author,number | jq -r '.[] | select(.author.login == "app/170210-test-bypass[bot]") | .number' | while read -r pr_number; do
             gh pr close -d -c "This pr is out of date." $pr_number
           done
         env: 
@@ -119,8 +125,8 @@ jobs:
       - name: Create commit
         if: steps.cd.outputs.need_update=='true'
         run: |
-          git config user.name  "finschia-auto-pr[bot]"
-          git config user.email "141415241+finschia-auto-pr[bot]@users.noreply.github.com"
+          git config user.name  "170210-test-bypass[bot]"
+          git config user.email "143078850+170210-test-bypass[bot]@users.noreply.github.com"
           git commit -m "chore: auto generate shared library"
       - name: Create pull request
         if: steps.cd.outputs.need_update=='true'
@@ -154,3 +160,41 @@ jobs:
         run: gh pr merge --auto --squash --delete-branch ${{ steps.cpr.outputs.pull-request-number }}
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+
+  get-version: # emit package version using `cargo tree -i`
+    name: Get Package Version
+    runs-on: ubuntu-latest
+    needs: deploy_to_git
+    if: always() && ( ${{ needs.deploy_to_git.result=='skipped' || needs.deploy_to_git.outputs.updated=='false' }} )
+    outputs:
+      package-version: ${{ steps.get-package-version.outputs.version }}
+      latest-tag: ${{ steps.get-latest-tag.outputs.tag }}
+    steps:
+      - name: Debug
+        run: |
+          echo ${{ needs.deploy_to_git.result }}
+          echo ${{ needs.deploy_to_git.outputs.updated }}
+
+  push-tag: # if the version does not exist as git tag, push it
+    name: Push Tag
+    needs:
+      - get-version
+    # if: ${{ needs.get-version.outputs.package-version != needs.get-version.outputs.latest-tag }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Push Tag to GitHub
+        run: |
+          echo "hello"
+
+  update-releases:
+    name: Update releases
+    needs:
+      - get-version
+      - push-tag
+    # if: ${{ needs.get-version.outputs.package-version != needs.get-version.outputs.latest-tag }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Build docker image
+        run: echo "bye"
